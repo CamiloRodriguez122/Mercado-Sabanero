@@ -76,3 +76,29 @@ def test_permite_agregar_exactamente_el_stock_disponible(carrito, inventario, li
 
     # Assert
     assert carrito.cantidad_de("LIC-01") == 3
+
+
+# CA4 ---------------------------------------------------------------------
+def test_suma_las_cantidades_si_el_producto_ya_esta_en_el_carrito(carrito, cafe):
+    # Arrange
+    carrito.agregar(cafe, 2)
+
+    # Act
+    carrito.agregar(cafe, 3)
+
+    # Assert
+    assert carrito.cantidad_de("CAF-01") == 5
+    assert len(carrito.items()) == 1
+
+
+def test_stock_insuficiente_tiene_en_cuenta_lo_que_ya_esta_en_el_carrito(
+    carrito, inventario, cafe
+):
+    # Arrange: stock 10, ya hay 6 en el carrito
+    inventario.obtener_stock.return_value = 10
+    carrito.agregar(cafe, 6)
+
+    # Act + Assert: 6 + 6 = 12 > 10
+    with pytest.raises(StockInsuficienteError):
+        carrito.agregar(cafe, 6)
+    assert carrito.cantidad_de("CAF-01") == 6
