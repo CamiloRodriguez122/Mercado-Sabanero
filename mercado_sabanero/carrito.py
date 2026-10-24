@@ -3,6 +3,9 @@ from mercado_sabanero.errores import CantidadInvalidaError, StockInsuficienteErr
 from mercado_sabanero.inventario import Inventario
 from mercado_sabanero.modelos import ItemCarrito, Producto
 
+CANTIDAD_MINIMA = 1
+CANTIDAD_MAXIMA = 50
+
 
 class Carrito:
     def __init__(self, inventario: Inventario):
@@ -10,8 +13,7 @@ class Carrito:
         self._items: dict[str, ItemCarrito] = {}
 
     def agregar(self, producto: Producto, cantidad: int) -> None:
-        if not isinstance(cantidad, int) or not 1 <= cantidad <= 50:
-            raise CantidadInvalidaError("La cantidad debe ser un entero entre 1 y 50")
+        self._validar_cantidad(cantidad)
         cantidad_total = self.cantidad_de(producto.codigo) + cantidad
         stock = self._inventario.obtener_stock(producto.codigo)
         if stock < cantidad_total:
@@ -33,3 +35,11 @@ class Carrito:
 
     def subtotal(self) -> int:
         return sum(item.valor for item in self._items.values())
+
+    @staticmethod
+    def _validar_cantidad(cantidad: int) -> None:
+        if not isinstance(cantidad, int) or not CANTIDAD_MINIMA <= cantidad <= CANTIDAD_MAXIMA:
+            raise CantidadInvalidaError(
+                f"La cantidad debe ser un entero entre {CANTIDAD_MINIMA} "
+                f"y {CANTIDAD_MAXIMA}"
+            )
