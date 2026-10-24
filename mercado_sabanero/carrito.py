@@ -30,3 +30,6 @@ class Carrito:
 
     def esta_vacio(self) -> bool:
         return not self._items
+
+    def subtotal(self) -> int:
+        return sum(item.valor for item in self._items.values())
