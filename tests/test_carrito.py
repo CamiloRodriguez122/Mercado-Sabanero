@@ -1,7 +1,7 @@
 """HU-01: Agregar productos al carrito."""
 import pytest
 
-from mercado_sabanero.errores import CantidadInvalidaError
+from mercado_sabanero.errores import CantidadInvalidaError, StockInsuficienteError
 
 
 # CA1 ---------------------------------------------------------------------
@@ -49,3 +49,30 @@ def test_no_consulta_el_inventario_cuando_la_cantidad_es_invalida(
 
     # Assert: uso del doble de prueba
     inventario.obtener_stock.assert_not_called()
+
+
+# CA3 ---------------------------------------------------------------------
+def test_informa_stock_insuficiente_cuando_hay_menos_unidades_que_las_pedidas(
+    carrito, inventario, licuadora
+):
+    # Arrange: el mock simula que solo quedan 3 licuadoras
+    inventario.obtener_stock.return_value = 3
+
+    # Act + Assert
+    with pytest.raises(StockInsuficienteError, match="Stock insuficiente"):
+        carrito.agregar(licuadora, 5)
+
+    # Assert: se consultó el inventario con el código correcto
+    inventario.obtener_stock.assert_called_once_with("LIC-01")
+    assert carrito.esta_vacio()
+
+
+def test_permite_agregar_exactamente_el_stock_disponible(carrito, inventario, licuadora):
+    # Arrange
+    inventario.obtener_stock.return_value = 3
+
+    # Act
+    carrito.agregar(licuadora, 3)
+
+    # Assert
+    assert carrito.cantidad_de("LIC-01") == 3
