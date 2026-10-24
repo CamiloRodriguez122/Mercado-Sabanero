@@ -1,5 +1,5 @@
 """HU-01: carrito de compras."""
-from mercado_sabanero.errores import CantidadInvalidaError
+from mercado_sabanero.errores import CantidadInvalidaError, StockInsuficienteError
 from mercado_sabanero.inventario import Inventario
 from mercado_sabanero.modelos import ItemCarrito, Producto
 
@@ -12,6 +12,12 @@ class Carrito:
     def agregar(self, producto: Producto, cantidad: int) -> None:
         if not isinstance(cantidad, int) or not 1 <= cantidad <= 50:
             raise CantidadInvalidaError("La cantidad debe ser un entero entre 1 y 50")
+        stock = self._inventario.obtener_stock(producto.codigo)
+        if stock < cantidad:
+            raise StockInsuficienteError(
+                f"Stock insuficiente de {producto.nombre}: "
+                f"disponibles {stock}, solicitadas {cantidad}"
+            )
         self._items[producto.codigo] = ItemCarrito(producto, cantidad)
 
     def cantidad_de(self, codigo_producto: str) -> int:

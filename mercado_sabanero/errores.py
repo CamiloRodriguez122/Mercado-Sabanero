@@ -7,3 +7,7 @@ class MercadoSabaneroError(Exception):
 
 class CantidadInvalidaError(MercadoSabaneroError, ValueError):
     """La cantidad no es un entero entre 1 y 50."""
+
+
+class StockInsuficienteError(MercadoSabaneroError):
+    """El inventario no tiene unidades suficientes."""
