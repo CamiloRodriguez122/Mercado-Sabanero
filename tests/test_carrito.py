@@ -102,3 +102,17 @@ def test_stock_insuficiente_tiene_en_cuenta_lo_que_ya_esta_en_el_carrito(
     with pytest.raises(StockInsuficienteError):
         carrito.agregar(cafe, 6)
     assert carrito.cantidad_de("CAF-01") == 6
+
+
+# Subtotal ----------------------------------------------------------------
+def test_subtotal_suma_el_valor_de_todos_los_productos(carrito, licuadora, cafe, arroz):
+    # Arrange
+    carrito.agregar(licuadora, 1)
+    carrito.agregar(cafe, 2)
+    carrito.agregar(arroz, 4)
+
+    # Act
+    subtotal = carrito.subtotal()
+
+    # Assert
+    assert subtotal == 228_000
