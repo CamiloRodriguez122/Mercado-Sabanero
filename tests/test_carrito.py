@@ -25,7 +25,7 @@ def test_rechaza_cantidades_fuera_del_rango_de_1_a_50(carrito, arroz, cantidad):
         carrito.agregar(arroz, cantidad)
 
 
-@pytest.mark.parametrize("cantidad", [2.5, "3", None])
+@pytest.mark.parametrize("cantidad", [2.5, "3", None, True])
 def test_rechaza_cantidades_que_no_son_enteros(carrito, arroz, cantidad):
     with pytest.raises(CantidadInvalidaError):
         carrito.agregar(arroz, cantidad)
