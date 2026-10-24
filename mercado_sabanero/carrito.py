@@ -38,7 +38,8 @@ class Carrito:
 
     @staticmethod
     def _validar_cantidad(cantidad: int) -> None:
-        if not isinstance(cantidad, int) or not CANTIDAD_MINIMA <= cantidad <= CANTIDAD_MAXIMA:
+        es_entero = isinstance(cantidad, int) and not isinstance(cantidad, bool)
+        if not es_entero or not CANTIDAD_MINIMA <= cantidad <= CANTIDAD_MAXIMA:
             raise CantidadInvalidaError(
                 f"La cantidad debe ser un entero entre {CANTIDAD_MINIMA} "
                 f"y {CANTIDAD_MAXIMA}"
