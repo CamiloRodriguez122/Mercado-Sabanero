@@ -1,0 +1,7 @@
+[run]
+source = mercado_sabanero
+branch = True
+
+[report]
+show_missing = True
+fail_under = 80
