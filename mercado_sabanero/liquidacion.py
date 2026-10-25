@@ -44,12 +44,16 @@ def liquidar(
 
     subtotal = carrito.subtotal()
     porcentaje_volumen = porcentaje_descuento_volumen(subtotal)
+
     porcentaje_cupon, cupon_envio_gratis = 0, False
     if codigo_cupon:
         cupon = validar_cupon(codigo_cupon, subtotal, hoy)
         porcentaje_cupon, cupon_envio_gratis = cupon.porcentaje, cupon.envio_gratis
+
+    # Los descuentos no se suman: se aplica solo el mayor.
     porcentaje = max(porcentaje_volumen, porcentaje_cupon)
     descuento = calcular_descuento(subtotal, porcentaje)
+
     lineas = tuple(
         LineaLiquidada(
             item.producto.codigo,
@@ -59,15 +63,18 @@ def liquidar(
         for item in carrito.items()
     )
     iva = sum(linea.iva for linea in lineas)
+
     valor_con_iva = sum(i.valor for i in carrito.items() if i.producto.tarifa_iva > 0)
     envio = calcular_envio(municipio, valor_con_iva, cupon_envio_gratis)
+
+    total_sin_envio = subtotal - descuento + iva
     return Liquidacion(
         subtotal=subtotal,
         porcentaje_descuento=porcentaje,
         descuento=descuento,
         iva=iva,
         envio=envio,
-        total=subtotal - descuento + iva + envio,
-        puntos=calcular_puntos(subtotal - descuento + iva, categoria),
+        total=total_sin_envio + envio,
+        puntos=calcular_puntos(total_sin_envio, categoria),
         lineas=lineas,
     )
