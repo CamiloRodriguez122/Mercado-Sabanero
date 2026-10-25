@@ -15,17 +15,25 @@ class Cupon:
     subtotal_minimo: int = 0
 
 
+CUPONES = {
+    "SABANERO10": Cupon(
+        "SABANERO10", vence=date(2026, 12, 31), porcentaje=10, subtotal_minimo=50_000
+    ),
+    "ENVIOGRATIS": Cupon("ENVIOGRATIS", vence=date(2026, 12, 31), envio_gratis=True),
+}
+
+
 def validar_cupon(codigo: str, subtotal: int, hoy: Optional[date] = None) -> Cupon:
+    """Devuelve el cupón si es aplicable; si no, lanza CuponInvalidoError."""
     hoy = hoy or date.today()
-    codigo_normalizado = (codigo or "").strip().upper()
-    if codigo_normalizado not in ("SABANERO10", "ENVIOGRATIS"):
+    cupon = CUPONES.get((codigo or "").strip().upper())
+    if cupon is None:
         raise CuponInvalidoError(f"El cupón '{codigo}' no existe")
-    if hoy > date(2026, 12, 31):
-        raise CuponInvalidoError(f"El cupón '{codigo_normalizado}' está vencido")
-    if codigo_normalizado == "SABANERO10":
-        if subtotal < 50_000:
-            raise CuponInvalidoError(
-                "El cupón 'SABANERO10' requiere un subtotal de al menos $50,000"
-            )
-        return Cupon("SABANERO10", vence=date(2026, 12, 31), porcentaje=10, subtotal_minimo=50_000)
-    return Cupon("ENVIOGRATIS", vence=date(2026, 12, 31), envio_gratis=True)
+    if hoy > cupon.vence:
+        raise CuponInvalidoError(f"El cupón '{cupon.codigo}' está vencido")
+    if subtotal < cupon.subtotal_minimo:
+        raise CuponInvalidoError(
+            f"El cupón '{cupon.codigo}' requiere un subtotal de al menos "
+            f"${cupon.subtotal_minimo:,}"
+        )
+    return cupon
