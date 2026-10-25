@@ -15,3 +15,7 @@ class StockInsuficienteError(MercadoSabaneroError):
 
 class CuponInvalidoError(MercadoSabaneroError):
     """El cupón no existe, está vencido o no aplica a la compra."""
+
+
+class DatoInvalidoError(MercadoSabaneroError, ValueError):
+    """Un dato de entrada (producto, municipio...) no es válido."""
