@@ -12,3 +12,12 @@ def test_envio_dentro_de_sincelejo_cuesta_8000(municipio):
 
     # Assert
     assert envio == 8_000
+
+
+@pytest.mark.parametrize("municipio", ["Corozal", "Sampués", "San Marcos"])
+def test_envio_a_otros_municipios_de_sucre_cuesta_15000(municipio):
+    # Act
+    envio = calcular_envio(municipio, valor_productos_con_iva=50_000)
+
+    # Assert
+    assert envio == 15_000
