@@ -49,3 +49,11 @@ def test_envio_gratis_por_umbral_tambien_aplica_a_otros_municipios():
 
     # Assert
     assert envio == 0
+
+
+def test_cupon_enviogratis_deja_el_envio_en_cero_aunque_la_compra_sea_pequena():
+    # Act
+    envio = calcular_envio("Corozal", 10_000, cupon_envio_gratis=True)
+
+    # Assert
+    assert envio == 0
