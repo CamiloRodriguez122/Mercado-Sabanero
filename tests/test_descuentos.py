@@ -12,6 +12,8 @@ from mercado_sabanero.descuentos import porcentaje_descuento_volumen
         (199_999, 0),      # CA1: justo debajo del primer umbral
         (200_000, 5),      # CA2: límite inferior
         (499_999, 5),      # CA2: límite superior
+        (500_000, 10),     # CA3: límite inferior
+        (2_000_000, 10),
     ],
 )
 def test_aplica_el_porcentaje_de_descuento_segun_el_subtotal(
