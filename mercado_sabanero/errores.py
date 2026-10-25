@@ -19,3 +19,7 @@ class CuponInvalidoError(MercadoSabaneroError):
 
 class DatoInvalidoError(MercadoSabaneroError, ValueError):
     """Un dato de entrada (producto, municipio...) no es válido."""
+
+
+class CarritoVacioError(MercadoSabaneroError):
+    """No se puede liquidar un carrito sin productos."""
