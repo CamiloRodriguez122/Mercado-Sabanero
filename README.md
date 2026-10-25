@@ -5,17 +5,17 @@ tienda en línea Mercado Sabanero (Sincelejo, Sucre). Desarrollado con **TDD**.
 Electiva Profesional en Ingeniería de Software – Agilidad Continua – CECAR.
 
 ## Herramientas
-| Propósito | Herramienta |
-|---|---|
-| Lenguaje | Python 3.10 o superior |
-| Pruebas unitarias | pytest |
-| Dobles de prueba (mock del inventario) | unittest.mock |
-| Cobertura | coverage.py |
-| Control de versiones | Git + GitHub |
+ Propósito | Herramienta |
+
+ Lenguaje | Python 3.10 o superior |
+ Pruebas unitarias | pytest |
+ Dobles de prueba (mock del inventario) | unittest.mock |
+ Cobertura | coverage.py |
+ Control de versiones | Git + GitHub |
 
 ## Instalación
 ```bash
-git clone https://github.com/<usuario>/mercado-sabanero.git
+git clone https://github.com/CamiloRodriguez122/Mercado-Sabanero
 cd mercado-sabanero
 python -m venv .venv
 # Windows (PowerShell):  .venv\Scripts\Activate.ps1
@@ -53,11 +53,8 @@ tests/              pruebas unitarias (patrón AAA)
 * Los cupones vencen el 31/12/2026 (configurable en `cupones.py`).
 
 ## Equipo
-| Integrante | Historias de usuario |
-|---|---|
-| (nombre) | HU-01, HU-02 |
-| (nombre) | HU-03, HU-04 |
-| (nombre) | HU-05, HU-06 |
+ Integrante
 
-## Uso de inteligencia artificial
-(Declarar aquí y en el informe qué apoyo de IA se usó y para qué.)
+ Camilo Andrés Rodríguez Arrieta
+ Jesús Villalba
+
