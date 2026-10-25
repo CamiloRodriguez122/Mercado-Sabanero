@@ -22,3 +22,13 @@ def test_sabanero10_otorga_10_por_ciento_con_subtotal_de_al_menos_50000(subtotal
 def test_sabanero10_se_rechaza_con_subtotal_menor_a_50000():
     with pytest.raises(CuponInvalidoError, match="subtotal"):
         validar_cupon("SABANERO10", 49_999, HOY)
+
+
+# CA2 ---------------------------------------------------------------------
+def test_enviogratis_marca_el_envio_como_gratuito():
+    # Act
+    cupon = validar_cupon("ENVIOGRATIS", 10_000, HOY)
+
+    # Assert
+    assert cupon.envio_gratis is True
+    assert cupon.porcentaje == 0
