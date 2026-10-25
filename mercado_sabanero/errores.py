@@ -11,3 +11,7 @@ class CantidadInvalidaError(MercadoSabaneroError, ValueError):
 
 class StockInsuficienteError(MercadoSabaneroError):
     """El inventario no tiene unidades suficientes."""
+
+
+class CuponInvalidoError(MercadoSabaneroError):
+    """El cupón no existe, está vencido o no aplica a la compra."""
