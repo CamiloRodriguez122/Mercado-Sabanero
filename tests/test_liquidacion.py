@@ -1,6 +1,9 @@
 """Pruebas de la liquidación completa (integra HU-02 a HU-06)."""
 from datetime import date
 
+import pytest
+
+from mercado_sabanero.errores import CuponInvalidoError
 from mercado_sabanero.liquidacion import liquidar
 from mercado_sabanero.modelos import CategoriaCliente, Producto
 
@@ -57,6 +60,56 @@ def test_total_es_subtotal_menos_descuento_mas_iva_mas_envio(carrito):
     assert liq.total == 127_000
 
 
+def test_cupon_sabanero10_aplica_10_por_ciento_cuando_no_hay_descuento_por_volumen(
+    carrito, arroz
+):
+    # Arrange: subtotal 90.000 (< 200.000, sin descuento por volumen)
+    carrito.agregar(arroz, 20)
+
+    # Act
+    liq = liquidar(carrito, "Sincelejo", codigo_cupon="SABANERO10", hoy=HOY)
+
+    # Assert
+    assert liq.porcentaje_descuento == 10
+    assert liq.descuento == 9_000
+
+
+def test_con_descuento_por_volumen_mayor_el_cupon_sabanero10_no_se_suma(carrito):
+    # Arrange: subtotal 500.000 -> volumen 10 %; el cupón también es 10 %
+    carrito.agregar(Producto("TV-02", "Televisor", 500_000, 19), 1)
+
+    # Act
+    liq = liquidar(carrito, "Sincelejo", codigo_cupon="SABANERO10", hoy=HOY)
+
+    # Assert: 10 % (50.000), no 20 %
+    assert liq.porcentaje_descuento == 10
+    assert liq.descuento == 50_000
+
+
+def test_con_descuento_por_volumen_menor_se_aplica_el_cupon_porque_es_el_mayor(carrito):
+    # Arrange: subtotal 300.000 -> volumen 5 %; el cupón da 10 %
+    carrito.agregar(Producto("NEV-01", "Nevera pequeña", 300_000, 19), 1)
+
+    # Act
+    liq = liquidar(carrito, "Sincelejo", codigo_cupon="SABANERO10", hoy=HOY)
+
+    # Assert
+    assert liq.porcentaje_descuento == 10
+    assert liq.descuento == 30_000
+
+
+def test_cupon_enviogratis_deja_el_envio_en_cero_en_la_liquidacion(carrito, arroz):
+    # Arrange: compra pequeña a otro municipio (costaría $15.000)
+    carrito.agregar(arroz, 2)
+
+    # Act
+    liq = liquidar(carrito, "Corozal", codigo_cupon="ENVIOGRATIS", hoy=HOY)
+
+    # Assert
+    assert liq.envio == 0
+    assert liq.total == 9_000
+
+
 def test_los_puntos_se_calculan_sin_incluir_el_envio(carrito):
     # Arrange: total 127.000 = 119.000 de compra + 8.000 de envío
     carrito.agregar(Producto("VEN-01", "Ventilador", 100_000, 19), 1)
@@ -78,3 +131,21 @@ def test_cliente_oro_recibe_el_doble_de_puntos_en_la_liquidacion(carrito, arroz)
 
     # Assert: 45.000 / 1.000 = 45 -> x2
     assert liq.puntos == 90
+
+
+def test_rechaza_liquidar_con_un_cupon_inexistente(carrito, arroz):
+    # Arrange
+    carrito.agregar(arroz, 1)
+
+    # Act + Assert
+    with pytest.raises(CuponInvalidoError):
+        liquidar(carrito, "Sincelejo", codigo_cupon="FALSO", hoy=HOY)
+
+
+def test_rechaza_liquidar_con_un_cupon_vencido(carrito, arroz):
+    # Arrange
+    carrito.agregar(arroz, 20)
+
+    # Act + Assert
+    with pytest.raises(CuponInvalidoError, match="vencido"):
+        liquidar(carrito, "Sincelejo", codigo_cupon="SABANERO10", hoy=date(2027, 1, 2))
