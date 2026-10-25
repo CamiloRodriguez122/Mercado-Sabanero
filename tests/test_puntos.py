@@ -24,3 +24,12 @@ def test_cliente_estandar_recibe_1_punto_por_cada_1000_completos(
 
     # Assert
     assert puntos == puntos_esperados
+
+
+# CA2 ---------------------------------------------------------------------
+def test_cliente_oro_recibe_el_doble_de_puntos():
+    # Act
+    puntos = calcular_puntos(250_515, CategoriaCliente.ORO)
+
+    # Assert
+    assert puntos == 500
