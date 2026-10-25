@@ -1,7 +1,10 @@
 """Liquidación completa de una compra (integra HU-01 a HU-06)."""
 from dataclasses import dataclass
+from datetime import date
+from typing import Optional
 
 from mercado_sabanero.carrito import Carrito
+from mercado_sabanero.cupones import validar_cupon
 from mercado_sabanero.descuentos import calcular_descuento, porcentaje_descuento_volumen
 from mercado_sabanero.envio import calcular_envio
 from mercado_sabanero.iva import calcular_iva
@@ -32,11 +35,16 @@ def liquidar(
     carrito: Carrito,
     municipio: str,
     categoria: CategoriaCliente = CategoriaCliente.ESTANDAR,
-    codigo_cupon=None,
-    hoy=None,
+    codigo_cupon: Optional[str] = None,
+    hoy: Optional[date] = None,
 ) -> Liquidacion:
     subtotal = carrito.subtotal()
-    porcentaje = porcentaje_descuento_volumen(subtotal)
+    porcentaje_volumen = porcentaje_descuento_volumen(subtotal)
+    porcentaje_cupon, cupon_envio_gratis = 0, False
+    if codigo_cupon:
+        cupon = validar_cupon(codigo_cupon, subtotal, hoy)
+        porcentaje_cupon, cupon_envio_gratis = cupon.porcentaje, cupon.envio_gratis
+    porcentaje = max(porcentaje_volumen, porcentaje_cupon)
     descuento = calcular_descuento(subtotal, porcentaje)
     lineas = tuple(
         LineaLiquidada(
@@ -48,7 +56,7 @@ def liquidar(
     )
     iva = sum(linea.iva for linea in lineas)
     valor_con_iva = sum(i.valor for i in carrito.items() if i.producto.tarifa_iva > 0)
-    envio = calcular_envio(municipio, valor_con_iva)
+    envio = calcular_envio(municipio, valor_con_iva, cupon_envio_gratis)
     return Liquidacion(
         subtotal=subtotal,
         porcentaje_descuento=porcentaje,
