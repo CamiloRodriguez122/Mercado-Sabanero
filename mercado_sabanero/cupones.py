@@ -16,13 +16,16 @@ class Cupon:
 
 
 def validar_cupon(codigo: str, subtotal: int, hoy: Optional[date] = None) -> Cupon:
+    hoy = hoy or date.today()
     codigo_normalizado = (codigo or "").strip().upper()
+    if codigo_normalizado not in ("SABANERO10", "ENVIOGRATIS"):
+        raise CuponInvalidoError(f"El cupón '{codigo}' no existe")
+    if hoy > date(2026, 12, 31):
+        raise CuponInvalidoError(f"El cupón '{codigo_normalizado}' está vencido")
     if codigo_normalizado == "SABANERO10":
         if subtotal < 50_000:
             raise CuponInvalidoError(
                 "El cupón 'SABANERO10' requiere un subtotal de al menos $50,000"
             )
         return Cupon("SABANERO10", vence=date(2026, 12, 31), porcentaje=10, subtotal_minimo=50_000)
-    if codigo_normalizado == "ENVIOGRATIS":
-        return Cupon("ENVIOGRATIS", vence=date(2026, 12, 31), envio_gratis=True)
-    raise CuponInvalidoError(f"El cupón '{codigo}' no existe")
+    return Cupon("ENVIOGRATIS", vence=date(2026, 12, 31), envio_gratis=True)
