@@ -1,9 +1,15 @@
 """Modelos de dominio: producto, ítem del carrito y categoría de cliente."""
 from dataclasses import dataclass
+from enum import Enum
 
 from mercado_sabanero.errores import DatoInvalidoError
 
 TARIFAS_IVA_VALIDAS = (0, 5, 19)
+
+
+class CategoriaCliente(Enum):
+    ESTANDAR = "ESTANDAR"
+    ORO = "ORO"
 
 
 @dataclass(frozen=True)
