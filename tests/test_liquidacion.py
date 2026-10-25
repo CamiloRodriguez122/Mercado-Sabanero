@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from mercado_sabanero.errores import CuponInvalidoError
+from mercado_sabanero.errores import CarritoVacioError, CuponInvalidoError
 from mercado_sabanero.liquidacion import liquidar
 from mercado_sabanero.modelos import CategoriaCliente, Producto
 
@@ -131,6 +131,11 @@ def test_cliente_oro_recibe_el_doble_de_puntos_en_la_liquidacion(carrito, arroz)
 
     # Assert: 45.000 / 1.000 = 45 -> x2
     assert liq.puntos == 90
+
+
+def test_rechaza_liquidar_un_carrito_vacio(carrito):
+    with pytest.raises(CarritoVacioError):
+        liquidar(carrito, "Sincelejo", hoy=HOY)
 
 
 def test_rechaza_liquidar_con_un_cupon_inexistente(carrito, arroz):
