@@ -41,6 +41,23 @@ def test_rechaza_cupones_inexistentes(codigo):
         validar_cupon(codigo, 100_000, HOY)
 
 
+def test_rechaza_cupones_vencidos():
+    # Arrange: la fecha de "hoy" es posterior al vencimiento (31/12/2026)
+    despues_del_vencimiento = date(2027, 1, 1)
+
+    # Act + Assert
+    with pytest.raises(CuponInvalidoError, match="vencido"):
+        validar_cupon("SABANERO10", 100_000, despues_del_vencimiento)
+
+
+def test_el_cupon_sigue_vigente_el_ultimo_dia():
+    # Act
+    cupon = validar_cupon("ENVIOGRATIS", 10_000, date(2026, 12, 31))
+
+    # Assert
+    assert cupon.codigo == "ENVIOGRATIS"
+
+
 def test_el_codigo_del_cupon_no_distingue_mayusculas_ni_espacios():
     # Act
     cupon = validar_cupon("  sabanero10 ", 80_000, HOY)
