@@ -32,3 +32,18 @@ def test_enviogratis_marca_el_envio_como_gratuito():
     # Assert
     assert cupon.envio_gratis is True
     assert cupon.porcentaje == 0
+
+
+# CA3 ---------------------------------------------------------------------
+@pytest.mark.parametrize("codigo", ["NOEXISTE", "", None, "SABANERO20"])
+def test_rechaza_cupones_inexistentes(codigo):
+    with pytest.raises(CuponInvalidoError):
+        validar_cupon(codigo, 100_000, HOY)
+
+
+def test_el_codigo_del_cupon_no_distingue_mayusculas_ni_espacios():
+    # Act
+    cupon = validar_cupon("  sabanero10 ", 80_000, HOY)
+
+    # Assert
+    assert cupon.codigo == "SABANERO10"
