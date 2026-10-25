@@ -2,6 +2,7 @@
 import pytest
 
 from mercado_sabanero.envio import calcular_envio
+from mercado_sabanero.errores import DatoInvalidoError
 
 
 # CA1 ---------------------------------------------------------------------
@@ -57,3 +58,9 @@ def test_cupon_enviogratis_deja_el_envio_en_cero_aunque_la_compra_sea_pequena():
 
     # Assert
     assert envio == 0
+
+
+@pytest.mark.parametrize("municipio", ["", "   ", None])
+def test_rechaza_municipio_vacio(municipio):
+    with pytest.raises(DatoInvalidoError):
+        calcular_envio(municipio, 10_000)
